@@ -92,20 +92,20 @@ task.spawn(function()
 		Text = "文件正在下载中，下载完成后你可能需要重新运行脚本。（如果你已经有这些文件，请忽略此提示）",
 		Duration = 5,
 	})
-	FEManager.DownloadFile(Directories.RBXMs, "Locust.rbxm", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm")
+	FEManager.DownloadFile(Directories.RBXMs, "Locust_v2.rbxm", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm")
 	StarterGui:SetCore("SendNotification",{
 		Title = "Cherry's Club",
 		Text = "RBXMs 下载完成。",
 		Duration = 2,
 	})
-	FEManager.DownloadFile(Directories.Songs, "LocustTheme.mp3", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3")
+	FEManager.DownloadFile(Directories.Songs, "LocustTheme_v2.mp3", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3")
  
 
 end)
 
 
 -- 特效设置
-local script = Services.InsertService:LoadLocalAsset(getcustomasset(Directories.RBXMs.."Locust.rbxm"))
+local script = Services.InsertService:LoadLocalAsset(getcustomasset(Directories.RBXMs.."Locust_v2.rbxm"))
 local Animations = script:WaitForChild("Animations")
 local Objects = script:WaitForChild("Objects")
 
@@ -320,7 +320,11 @@ do
 					end
 
 					if MeshId then
-						if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+						local tableMesh = Table.MeshId or ""
+						local tableTexture = Table.TextureId or ""
+						local meshMatch = (tableMesh == "") or stringfind(MeshId, tableMesh)
+						local textureMatch = (tableTexture == "") or (TextureId and stringfind(TextureId, tableTexture))
+						if meshMatch and textureMatch then
 							return Handle
 						end
 					end
@@ -382,7 +386,11 @@ do
 						end
 
 						for Index, Table in next, OptionsAccessories do
-							if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+							local tableMesh = Table.MeshId or ""
+							local tableTexture = Table.TextureId or ""
+							local meshMatch = (tableMesh == "") or stringfind(MeshId, tableMesh)
+							local textureMatch = (tableTexture == "") or (TextureId and stringfind(TextureId, tableTexture))
+							if meshMatch and textureMatch then
 								local Instance = nil
 								local TableName = Table.Name
 								local TableNames = Table.Names
@@ -1110,7 +1118,7 @@ local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
 		-- 剑 / 矛 骨架
-		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "89519907183882", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
+		{ Name = "RigTorso", MeshId = "70523944235011", TextureId = "", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
 		{ Name = "RigLowerRL", MeshId = "18610679741",  TextureId = "18625348232", Offset = CFrame.new(.2, 2, 0) * CFrame.Angles(Rad(135),  Rad(0), Rad(0)) },
@@ -1172,7 +1180,7 @@ local Theme = Instance.new("Sound", RootPart)
 if Services.RunService:IsStudio() then
 	Theme.SoundId = "rbxasset://Locust.mp3"
 else
-	Theme.SoundId = getcustomasset(Directories.Songs.."LocustTheme.mp3")
+	Theme.SoundId = getcustomasset(Directories.Songs.."LocustTheme_v2.mp3")
 end
 Theme.Volume = 1
 Theme.Looped = true

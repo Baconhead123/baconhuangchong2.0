@@ -301,7 +301,7 @@ do
 				end
 			end
 		elseif IsA(Descendant, "Attachment") then
-			-- 移除名字检查，防止检测不到
+			-- 【彻底修复】移除名字检查，防止检测不到
 			local Parent = Descendant.Parent
 			if IsA(Parent, "BasePart") then
 				local MeshId = nil
@@ -339,13 +339,29 @@ do
 							if Instance then
 								local Blacklisted = Blacklist[Instance]
 								if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
-									-- 【彻底修复】直接使用 Aligns 物理更新表，不再进行复杂的焊接克隆，防止脚本报错卡死
-									tableinsert(Aligns, {
-										Offset = Table.Offset,
-										Part0 = Parent, -- 玩家原本的剑
-										Part1 = Instance -- Rig 的躯干
-									})
-									Blacklist[Instance] = { MeshId = MeshId }
+									local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
+									if Accoutrement and IsA(Accoutrement, "Accoutrement") then
+										local AccoutrementClone = Clone(Accoutrement)
+										local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
+										if HandleClone then
+											HandleClone.Transparency = OptionsRigTransparency
+											for _, d in next, GetDescendants(HandleClone) do
+												if IsA(d, "JointInstance") then Destroy(d) end
+											end
+											local AccessoryWeld = Instancenew("Weld")
+											AccessoryWeld.C0 = Table.Offset
+											AccessoryWeld.C1 = CFrame.new()
+											AccessoryWeld.Name = "AccessoryWeld"
+											AccessoryWeld.Part0 = HandleClone
+											AccessoryWeld.Part1 = Instance
+											AccessoryWeld.Parent = HandleClone
+											AccoutrementClone.Parent = Rig
+											tableinsert(Accessories, { Handle = HandleClone, MeshId = MeshId, TextureId = TextureId })
+											tableinsert(Aligns, { Offset = CFrameidentity, Part0 = Parent, Part1 = HandleClone })
+											Blacklist[Instance] = { MeshId = MeshId }
+											print("成功将剑挂载到 RigTorso，MeshId:", MeshId)
+										end
+									end
 									return
 								end
 							end
@@ -688,7 +704,8 @@ do
 		local Axis = 27 + mathsin(Time)
 		for Index, Table in next, Aligns do
 			local Part0 = Table.Part0
-			if not Exceptions[Part0] then
+			-- 【彻底修复】添加 Part0.Parent 检查，防止玩家重生时脚本崩溃
+			if Part0 and Part0.Parent and not Exceptions[Part0] then
 				if Part0.ReceiveAge == 0 then
 					if IsDescendantOf(Part0, Workspace) and not GetJoints(Part0)[1] and not IsGrounded(Part0) then
 						local Part1 = Table.Part1
@@ -714,7 +731,8 @@ do
 		RigHumanoidRootPart.CFrame = CFramelookAt(Position, Position + CurrentCamera.CFrame.LookVector * Vector3xzAxis)
 		for Index, Table in next, Aligns do
 			local Part0 = Table.Part0
-			if Part0.ReceiveAge == 0 and IsDescendantOf(Part0, Workspace) and not GetJoints(Part0)[1] and not IsGrounded(Part0) then
+			-- 【彻底修复】添加 Part0.Parent 检查，防止玩家重生时脚本崩溃
+			if Part0 and Part0.Parent and Part0.ReceiveAge == 0 and IsDescendantOf(Part0, Workspace) and not GetJoints(Part0)[1] and not IsGrounded(Part0) then
 				Part0.CFrame = Table.Part1.CFrame * Table.Offset
 			end
 		end

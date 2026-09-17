@@ -278,8 +278,7 @@ do
 						end
 					end
 					if MeshId then
-						-- 只认 MeshId
-						if stringfind(MeshId, Table.MeshId) then
+						if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
 							return Handle
 						end
 					end
@@ -319,8 +318,7 @@ do
 					end
 					if MeshId then
 						for Index, Table in next, Accessories do
-							-- 只认 MeshId
-							if Table.MeshId == MeshId then
+							if Table.MeshId == MeshId and Table.TextureId == TextureId then
 								local Handle = Table.Handle
 								tableinsert(Aligns, {
 									LastPosition = Handle.Position,
@@ -332,8 +330,7 @@ do
 							end
 						end
 						for Index, Table in next, OptionsAccessories do
-							-- 只认 MeshId
-							if MeshId and stringfind(MeshId, Table.MeshId) then
+							if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
 								local Instance = nil
 								local TableName = Table.Name
 								local TableNames = Table.Names
@@ -350,14 +347,13 @@ do
 								end
 								if Instance then
 									local Blacklisted = Blacklist[Instance]
-									-- 只认 MeshId
-									if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
+									if not ( Blacklisted and Blacklisted.MeshId == MeshId and Blacklisted.TextureId == TextureId ) then
 										tableinsert(Aligns, {
 											Offset = Table.Offset,
 											Part0 = Parent,
 											Part1 = Instance
 										})
-										Blacklist[Instance] = { MeshId = MeshId }
+										Blacklist[Instance] = { MeshId = MeshId, TextureId = TextureId }
 										return
 									end
 								end

@@ -301,96 +301,67 @@ do
 				end
 			end
 		elseif IsA(Descendant, "Attachment") then
-			local Attachment = Attachments[Descendant.Name]
-			if Attachment then
-				local Parent = Descendant.Parent
-				if IsA(Parent, "BasePart") then
-					local MeshId = nil
-					local TextureId = nil
-					if IsA(Parent, "MeshPart") then
-						MeshId = Parent.MeshId
-						TextureId = Parent.TextureID
-					else
-						local SpecialMesh = FindFirstChildOfClass(Parent, "SpecialMesh")
-						if SpecialMesh then
-							MeshId = SpecialMesh.MeshId
-							TextureId = SpecialMesh.TextureId
-						end
+			local Parent = Descendant.Parent
+			if IsA(Parent, "BasePart") then
+				local MeshId = nil
+				local TextureId = nil
+				if IsA(Parent, "MeshPart") then
+					MeshId = Parent.MeshId
+					TextureId = Parent.TextureID
+				else
+					local SpecialMesh = FindFirstChildOfClass(Parent, "SpecialMesh")
+					if SpecialMesh then
+						MeshId = SpecialMesh.MeshId
+						TextureId = SpecialMesh.TextureId
 					end
-					if MeshId then
-						for Index, Table in next, Accessories do
-							-- 只认 MeshId
-							if Table.MeshId == MeshId then
-								local Handle = Table.Handle
-								tableinsert(Aligns, {
-									LastPosition = Handle.Position,
-									Offset = CFrameidentity,
-									Part0 = Parent,
-									Part1 = Handle
-								})
-								return
+				end
+				if MeshId then
+					for Index, Table in next, OptionsAccessories do
+						-- 只认 MeshId
+						if MeshId and stringfind(MeshId, Table.MeshId) then
+							local Instance = nil
+							local TableName = Table.Name
+							local TableNames = Table.Names
+							if TableName then
+								Instance = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
+							else
+								for Index, TableName in next, TableNames do
+									local Child = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
+									if not ( TableNames[Index + 1] and Blacklist[Child] ) then
+										Instance = Child
+										break
+									end
+								end
 							end
-						end
-						for Index, Table in next, OptionsAccessories do
-							-- 只认 MeshId
-							if MeshId and stringfind(MeshId, Table.MeshId) then
-								local Instance = nil
-								local TableName = Table.Name
-								local TableNames = Table.Names
-								if TableName then
-									Instance = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
-								else
-									for Index, TableName in next, TableNames do
-										local Child = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
-										if not ( TableNames[Index + 1] and Blacklist[Child] ) then
-											Instance = Child
-											break
+							if Instance then
+								local Blacklisted = Blacklist[Instance]
+								-- 只认 MeshId
+								if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
+									local HandleClone = Clone(Parent)
+									HandleClone.Transparency = OptionsRigTransparency
+									for Index, Descendant in next, GetDescendants(HandleClone) do
+										if IsA(Descendant, "JointInstance") then
+											Destroy(Descendant)
 										end
 									end
-								end
-								if Instance then
-									local Blacklisted = Blacklist[Instance]
-									-- 只认 MeshId
-									if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
-										tableinsert(Aligns, {
-											Offset = Table.Offset,
-											Part0 = Parent,
-											Part1 = Instance
-										})
-										Blacklist[Instance] = { MeshId = MeshId }
-										return
-									end
-								end
-							end
-						end
-						local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
-						if Accoutrement and IsA(Accoutrement, "Accoutrement") then
-							local AccoutrementClone = Clone(Accoutrement)
-							local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
-							HandleClone.Transparency = OptionsRigTransparency
-							for Index, Descendant in next, GetDescendants(HandleClone) do
-								if IsA(Descendant, "JointInstance") then
-									Destroy(Descendant)
+									local AccessoryWeld = Instancenew("Weld")
+									AccessoryWeld.C0 = Descendant.CFrame
+									AccessoryWeld.C1 = CFrame.new()
+									AccessoryWeld.Name = "AccessoryWeld"
+									AccessoryWeld.Part0 = HandleClone
+									AccessoryWeld.Part1 = Instance
+									AccessoryWeld.Parent = HandleClone
+									HandleClone.Parent = Rig
+									tableinsert(Aligns, {
+										Offset = Table.Offset,
+										Part0 = HandleClone,
+										Part1 = Instance
+									})
+									Blacklist[Instance] = { MeshId = MeshId }
+									print("成功检测到饰品并挂载，MeshId:", MeshId)
+									return
 								end
 							end
-							local AccessoryWeld = Instancenew("Weld")
-							AccessoryWeld.C0 = Descendant.CFrame
-							AccessoryWeld.C1 = Attachment.CFrame
-							AccessoryWeld.Name = "AccessoryWeld"
-							AccessoryWeld.Part0 = HandleClone
-							AccessoryWeld.Part1 = Attachment.Parent
-							AccessoryWeld.Parent = HandleClone
-							AccoutrementClone.Parent = Rig
-							tableinsert(Accessories, {
-								Handle = HandleClone,
-								MeshId = MeshId,
-								TextureId = TextureId
-							})
-							tableinsert(Aligns, {
-								Offset = CFrameidentity,
-								Part0 = Parent,
-								Part1 = HandleClone
-							})
 						end
 					end
 				end
@@ -905,9 +876,8 @@ end
 local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
-		-- Swords / Spears Rig（只保留剑/矛组，不保留方块组，防止冲突）
-		-- 针对原点在中心的剑，偏移量已调整，你可以微调这里的 Y 和 Z
-		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0.5) * CFrame.Angles(0, Rad(0), Rad(-15)) },
+		-- Swords / Spears Rig（已改回原来的角度和位置）
+		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
 		{ Name = "RigLowerRL", MeshId = "18610679741",  TextureId = "18625348232", Offset = CFrame.new(.2, 2, 0) * CFrame.Angles(Rad(135),  Rad(0), Rad(0)) },

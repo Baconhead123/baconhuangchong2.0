@@ -29,9 +29,9 @@ local ScriptOptions = {
 		ToolFling = false,
 	};
 	Reanimate_Settings = {
-		Frequency = 6, -- this is basically how fast the oscillation goes
-		Amplification = 6, -- this is how far the oscillation goes
-		FrontOffset = 2.5, -- this is how much youre in front of the player during prediction
+		Frequency = 6,
+		Amplification = 6,
+		FrontOffset = 2.5,
 	}
 }
 local AnimatorCache = {
@@ -278,7 +278,8 @@ do
 						end
 					end
 					if MeshId then
-						if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+						-- 只认 MeshId
+						if stringfind(MeshId, Table.MeshId) then
 							return Handle
 						end
 					end
@@ -318,7 +319,8 @@ do
 					end
 					if MeshId then
 						for Index, Table in next, Accessories do
-							if Table.MeshId == MeshId and Table.TextureId == TextureId then
+							-- 只认 MeshId
+							if Table.MeshId == MeshId then
 								local Handle = Table.Handle
 								tableinsert(Aligns, {
 									LastPosition = Handle.Position,
@@ -330,7 +332,8 @@ do
 							end
 						end
 						for Index, Table in next, OptionsAccessories do
-							if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+							-- 只认 MeshId
+							if MeshId and stringfind(MeshId, Table.MeshId) then
 								local Instance = nil
 								local TableName = Table.Name
 								local TableNames = Table.Names
@@ -347,13 +350,14 @@ do
 								end
 								if Instance then
 									local Blacklisted = Blacklist[Instance]
-									if not ( Blacklisted and Blacklisted.MeshId == MeshId and Blacklisted.TextureId == TextureId ) then
+									-- 只认 MeshId
+									if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
 										tableinsert(Aligns, {
 											Offset = Table.Offset,
 											Part0 = Parent,
 											Part1 = Instance
 										})
-										Blacklist[Instance] = { MeshId = MeshId, TextureId = TextureId }
+										Blacklist[Instance] = { MeshId = MeshId }
 										return
 									end
 								end
@@ -624,7 +628,6 @@ do
 			tableclear(Aligns)
 			tableclear(Blacklist)
 			tableclear(Accessories)
-			-- pretty much FORCE welds to delete cause games with ragdoll messed ts up and only 3 hats worked (fixed)
 			for i, v in next, GetChildren(Rig) do
 				if IsA(v, "Accoutrement") then
 					Destroy(v)
@@ -824,6 +827,7 @@ do
 			RigHumanoid = Rig.Humanoid
 			RigHumanoidRootPart = Rig.HumanoidRootPart
 			Rig.Parent = Workspace
+			
 			for Index, Descendant in next, GetDescendants(Rig) do
 				if IsA(Descendant, "Attachment") then
 					Attachments[Descendant.Name] = Descendant
@@ -901,8 +905,9 @@ end
 local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
-		-- Swords / Spears Rig
-		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
+		-- Swords / Spears Rig（只保留剑/矛组，不保留方块组，防止冲突）
+		-- 针对原点在中心的剑，偏移量已调整，你可以微调这里的 Y 和 Z
+		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0.5) * CFrame.Angles(0, Rad(0), Rad(-15)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
 		{ Name = "RigLowerRL", MeshId = "18610679741",  TextureId = "18625348232", Offset = CFrame.new(.2, 2, 0) * CFrame.Angles(Rad(135),  Rad(0), Rad(0)) },
@@ -911,16 +916,6 @@ Empyrean = Start({
 		{ Name = "RigUpperRA", MeshId = "17605983196",  TextureId = "17606581728", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
-		-- Block Rig
-		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
-		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
-		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
-		{ Name = "RigUpperRL", MeshId = "115322100534609",  TextureId = "140198794837319", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
-		{ Name = "RigLowerRL", MeshId = "97418736735022",  TextureId = "84047101371984", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
-		{ Name = "RigUpperLA", MeshId = "106942781700680",  TextureId = "90838563977106", Offset = CFrame.new(0, 2.25, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
-		{ Name = "RigUpperRA", MeshId = "82433902584666",  TextureId = "129625048922193", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
-		{ Name = "RigLowerLA", MeshId = "17323421898",  TextureId = "75930329122564", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
-		{ Name = "RigLowerRA", MeshId = "17323421898",  TextureId = "95461117386269", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 	},
 	ApplyDescription = true,
 	BreakJointsDelay = 0.265,
@@ -1000,7 +995,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 	Class.Speed = 1
 	Class.KeepLast = 0
 	local Keyframes = KeyframeSequence:GetKeyframes()
-	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- Thanks 10k_i, roblox not sorting by default.
+	table.sort(Keyframes, function(a, b) return a.Time < b.Time end)
 	Class.Length = Keyframes[#(Keyframes)].Time
 	local Yield = function(Seconds)
 		local Elapsed = 0
@@ -1009,7 +1004,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 			Elapsed += Services.RunService.Heartbeat:Wait()
 		until Elapsed >= Target
 	end
-	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- Moon Suite Fix
+	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then
 		local Children = Sequence:GetChildren()
 		for i = 1, #(Children) do
 			if Children[i]:FindFirstChild("Torso") then
@@ -1219,7 +1214,7 @@ local NewHitbox = function(Position: Vector3 | CFrame, Size: number, HitSound: n
 	Hitbox.CanCollide = false
 	Hitbox.CanQuery = false
 	Hitbox.CanTouch = true
-	Hitbox.CFrame = Position or RootPart.CFrame -- RootPart.CFrame * CFrame.new(0, 0, -(4 / 2 + 2))
+	Hitbox.CFrame = Position or RootPart.CFrame
 	Hitbox.Parent = workspace
 	local OverlapParams = OverlapParams.new()
 	OverlapParams.FilterType = Enum.RaycastFilterType.Exclude
@@ -1242,7 +1237,7 @@ local NewHitbox = function(Position: Vector3 | CFrame, Size: number, HitSound: n
 	local HitboxFade = game:GetService("TweenService"):Create(Hitbox, TweenInfo.new(0.5), {Transparency = 1})
 	HitboxFade:Play()
 	game:GetService("Debris"):AddItem(Hitbox, 0.5)
-	return Hitbox -- added incase you wanna make it animated or even position it somewhere else
+	return Hitbox
 end
 local SetWalkSpeed = function(Speed: number)
 	Humanoid.WalkSpeed = Speed
@@ -1396,7 +1391,7 @@ local SetupToggle = function(Setting: boolean)
 		Button.BackgroundColor3 = ScriptOptions.Settings[Setting] and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
 	end)
 end
-local SetupTextBox = function(Setting: string | number) -- currently only used in the rigsize (no other textboxes will exist i think)
+local SetupTextBox = function(Setting: string | number)
 	local Object = SettingsHolder:FindFirstChild(Setting)
 	if not Object then return end
 	local TextBox = Object:FindFirstChildWhichIsA("TextBox")

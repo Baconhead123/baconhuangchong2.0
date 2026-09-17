@@ -9,30 +9,10 @@
 local FEManager = loadstring(game:HttpGet("https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt"))()
 -- tables
 local ScriptOptions = {
-	Settings = {
-		AnimationSpeed = 1.25;
-		Fling = true;
-		Music = true;
-		FOVEffects = true;
-		CameraEffects = true;
-		InfiniteJump = false;
-	};
-	Customization = { 
-		HitboxColor = Color3.fromRGB(255, 255, 255);
-		Hitmarker = 103397225855135;
-	};
-	FlingOptions = {
-		HatFling = false,
-		Highlight = false,
-		PredictionFling = true,
-		Timeout = 0.5,
-		ToolFling = false,
-	};
-	Reanimate_Settings = {
-		Frequency = 6,
-		Amplification = 6,
-		FrontOffset = 2.5,
-	}
+	Settings = { AnimationSpeed = 1.25; Fling = true; Music = true; FOVEffects = true; CameraEffects = true; InfiniteJump = false; };
+	Customization = { HitboxColor = Color3.fromRGB(255, 255, 255); Hitmarker = 103397225855135; };
+	FlingOptions = { HatFling = false; Highlight = false; PredictionFling = true; Timeout = 0.5; ToolFling = false; };
+	Reanimate_Settings = { Frequency = 6; Amplification = 6; FrontOffset = 2.5; }
 }
 local AnimatorCache = { Joints = {}; AnimDefaults = {}; Rigs = {}; }
 local ScriptCache = { StoredMotors = {}; TrashBin = {}; HitHumanoids = {}; ActiveConnections = {}; }
@@ -129,6 +109,8 @@ do
 		end
 	end
 	local NewIndex = function(self, Index, Value) self[Index] = Value end
+	
+	-- 核心修复：严格限制只有 70523944235011 会触发映射，不再影响其他任何饰品
 	local DescendantAdded = function(Descendant)
 		if IsA(Descendant, "Accoutrement") and OptionsHatDrop then
 			if not pcall(NewIndex, Descendant, "BackendAccoutrementState", 0) then
@@ -138,46 +120,44 @@ do
 		elseif IsA(Descendant, "Attachment") then
 			local Parent = Descendant.Parent
 			if IsA(Parent, "BasePart") then
-				local MeshId = nil; local TextureId = nil
-				if IsA(Parent, "MeshPart") then MeshId = Parent.MeshId; TextureId = Parent.TextureID
+				local MeshId = nil
+				if IsA(Parent, "MeshPart") then MeshId = Parent.MeshId
 				else
 					local SpecialMesh = FindFirstChildOfClass(Parent, "SpecialMesh")
-					if SpecialMesh then MeshId = SpecialMesh.MeshId; TextureId = SpecialMesh.TextureId end
+					if SpecialMesh then MeshId = SpecialMesh.MeshId end
 				end
-				if MeshId then
-					for Index, Table in next, OptionsAccessories do
-						if MeshId and stringfind(MeshId, Table.MeshId) then
-							local Instance = nil
-							local TableName = Table.Name
-							if TableName then Instance = FindFirstChildOfClassAndName(Rig, "BasePart", TableName) end
+				
+				-- 严格限制：只处理剑的 ID
+				if MeshId and stringfind(MeshId, "70523944235011") then
+					local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
+					if Accoutrement and IsA(Accoutrement, "Accoutrement") then
+						local AccoutrementClone = Clone(Accoutrement)
+						local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
+						if HandleClone then
+							HandleClone.Transparency = OptionsRigTransparency
+							for _, d in next, GetDescendants(HandleClone) do
+								if IsA(d, "JointInstance") then Destroy(d) end
+							end
+							
+							local Instance = FindFirstChildOfClassAndName(Rig, "BasePart", "RigTorso")
 							if Instance then
-								local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
-								if Accoutrement and IsA(Accoutrement, "Accoutrement") then
-									local AccoutrementClone = Clone(Accoutrement)
-									local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
-									if HandleClone then
-										HandleClone.Transparency = OptionsRigTransparency
-										for _, d in next, GetDescendants(HandleClone) do
-											if IsA(d, "JointInstance") then Destroy(d) end
-										end
-										local AccessoryWeld = Instancenew("Weld")
-										AccessoryWeld.C0 = Table.Offset -- 应用配置中的偏移量
-										AccessoryWeld.C1 = CFrame.new()
-										AccessoryWeld.Name = "AccessoryWeld"
-										AccessoryWeld.Part0 = HandleClone
-										AccessoryWeld.Part1 = Instance
-										AccessoryWeld.Parent = HandleClone
-										AccoutrementClone.Parent = Rig
-										tableinsert(Accessories, { Handle = HandleClone, MeshId = MeshId, TextureId = TextureId })
-										tableinsert(Aligns, {
-											Offset = CFrameidentity, -- 恢复为默认，确保玩家剑完美跟随克隆体
-											Part0 = Parent,
-											Part1 = HandleClone
-										})
-										print("成功检测到饰品并挂载，MeshId:", MeshId, "目标:", TableName)
-										return
-									end
-								end
+								local AccessoryWeld = Instancenew("Weld")
+								-- 应用原始偏移量
+								AccessoryWeld.C0 = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60))
+								AccessoryWeld.C1 = CFrame.new()
+								AccessoryWeld.Name = "AccessoryWeld"
+								AccessoryWeld.Part0 = HandleClone
+								AccessoryWeld.Part1 = Instance
+								AccessoryWeld.Parent = HandleClone
+								AccoutrementClone.Parent = Rig
+								
+								-- 修复焊接方向：让剑跟随躯干，而不是躯干跟随剑
+								tableinsert(Aligns, {
+									Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)),
+									Part0 = HandleClone,
+									Part1 = Instance
+								})
+								print("成功将剑挂载到 RigTorso，MeshId:", MeshId)
 							end
 						end
 					end
@@ -185,6 +165,7 @@ do
 			end
 		end
 	end
+	
 	local SetCameraSubject = function()
 		local CameraCFrame = CurrentCamera.CFrame; local Position = RigHumanoidRootPart.CFrame.Position
 		CurrentCamera.CameraSubject = RigHumanoid; Wait(PreRender)
@@ -479,7 +460,7 @@ end
 local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
-		-- 剑/矛组（已恢复原来的角度和位置：Y轴下移2格，Z轴旋转60度）
+		-- 只保留剑组，偏移量已经恢复到原始值
 		{ Name = "RigTorso", MeshId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
@@ -490,32 +471,12 @@ Empyrean = Start({
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 	},
-	ApplyDescription = true,
-	BreakJointsDelay = 0.265,
-	ClickFling = false,
-	DefaultFlingOptions = {
-		HatFling = false,
-		Highlight = true,
-		PredictionFling = true,
-		Timeout = 0.5,
-		ToolFling = false,
-	},
-	DisableCharacterCollisions = true,
-	DisableHealthBar = true,
-	DisableRigCollisions = true,
-	HatDrop = false,
-	HideCharacter = Vector3.new(0, -30, 0),
-	ParentCharacter = true,
-	RigSize = 1,
-	RigTransparency = 0.75,
-	R15 = false,
-	SetCameraSubject = true,
-	SetCameraType = true,
-	SetCharacter = false,
-	SetCollisionGroup = true,
-	SimulationRadius = 2147483647,
-	TeleportRadius = 12,
-	UseServerBreakJoints = true,
+	ApplyDescription = true; BreakJointsDelay = 0.265; ClickFling = false;
+	DefaultFlingOptions = { HatFling = false; Highlight = true; PredictionFling = true; Timeout = 0.5; ToolFling = false; };
+	DisableCharacterCollisions = true; DisableHealthBar = true; DisableRigCollisions = true;
+	HatDrop = false; HideCharacter = Vector3.new(0, -30, 0); ParentCharacter = true; RigSize = 1;
+	RigTransparency = 0.75; R15 = false; SetCameraSubject = true; SetCameraType = true; SetCharacter = false;
+	SetCollisionGroup = true; SimulationRadius = 2147483647; TeleportRadius = 12; UseServerBreakJoints = true;
 })
 
 -- character setup

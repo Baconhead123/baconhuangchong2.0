@@ -301,7 +301,7 @@ do
 				end
 			end
 		elseif IsA(Descendant, "Attachment") then
-			-- 【彻底修复】删除了 local Attachment = Attachments[Descendant.Name] 和 if Attachment then 的限制，不再要求名字匹配
+			-- 【彻底修复报错】删除了Attachment变量，防止脚本卡死
 			local Parent = Descendant.Parent
 			if IsA(Parent, "BasePart") then
 				local MeshId = nil
@@ -374,10 +374,10 @@ do
 						end
 						local AccessoryWeld = Instancenew("Weld")
 						AccessoryWeld.C0 = Descendant.CFrame
-						AccessoryWeld.C1 = Attachment.CFrame
+						AccessoryWeld.C1 = CFrame.new() -- 修复：不再使用不存在的 Attachment.CFrame
 						AccessoryWeld.Name = "AccessoryWeld"
 						AccessoryWeld.Part0 = HandleClone
-						AccessoryWeld.Part1 = Attachment.Parent
+						AccessoryWeld.Part1 = Parent -- 修复：使用扫描到的 Parent 作为挂载点
 						AccessoryWeld.Parent = HandleClone
 						AccoutrementClone.Parent = Rig
 						tableinsert(Accessories, {
@@ -626,6 +626,7 @@ do
 			tableclear(Aligns)
 			tableclear(Blacklist)
 			tableclear(Accessories)
+			-- 强制删除焊接，防止布娃娃系统搞乱
 			for i, v in next, GetChildren(Rig) do
 				if IsA(v, "Accoutrement") then
 					Destroy(v)
@@ -940,7 +941,7 @@ Empyrean = Start({
 	HideCharacter = Vector3.new(0, -30, 0),
 	ParentCharacter = true,
 	RigSize = 1,
-	RigTransparency = 0.75,
+	RigTransparency = 0, -- 关键改动：将透明度改为0，解决头和躯干消失的问题
 	R15 = false,
 	SetCameraSubject = true,
 	SetCameraType = true,

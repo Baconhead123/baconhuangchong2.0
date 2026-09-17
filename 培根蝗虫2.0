@@ -278,7 +278,8 @@ do
 						end
 					end
 					if MeshId then
-						if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+						-- 修改：只认 MeshId
+						if stringfind(MeshId, Table.MeshId) then
 							return Handle
 						end
 					end
@@ -318,7 +319,8 @@ do
 					end
 					if MeshId then
 						for Index, Table in next, Accessories do
-							if Table.MeshId == MeshId and Table.TextureId == TextureId then
+							-- 修改：只认 MeshId
+							if Table.MeshId == MeshId then
 								local Handle = Table.Handle
 								tableinsert(Aligns, {
 									LastPosition = Handle.Position,
@@ -330,7 +332,8 @@ do
 							end
 						end
 						for Index, Table in next, OptionsAccessories do
-							if stringfind(MeshId, Table.MeshId) and stringfind(TextureId, Table.TextureId) then
+							-- 修改：只认 MeshId
+							if MeshId and stringfind(MeshId, Table.MeshId) then
 								local Instance = nil
 								local TableName = Table.Name
 								local TableNames = Table.Names
@@ -347,13 +350,14 @@ do
 								end
 								if Instance then
 									local Blacklisted = Blacklist[Instance]
-									if not ( Blacklisted and Blacklisted.MeshId == MeshId and Blacklisted.TextureId == TextureId ) then
+									-- 修改：只认 MeshId
+									if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
 										tableinsert(Aligns, {
 											Offset = Table.Offset,
 											Part0 = Parent,
 											Part1 = Instance
 										})
-										Blacklist[Instance] = { MeshId = MeshId, TextureId = TextureId }
+										Blacklist[Instance] = { MeshId = MeshId }
 										return
 									end
 								end
@@ -902,7 +906,7 @@ local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
 		-- Swords / Spears Rig
-		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
+		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "89519907183882", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
 		{ Name = "RigLowerRL", MeshId = "18610679741",  TextureId = "18625348232", Offset = CFrame.new(.2, 2, 0) * CFrame.Angles(Rad(135),  Rad(0), Rad(0)) },
@@ -912,7 +916,7 @@ Empyrean = Start({
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		-- Block Rig
-		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "70523944235011", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
+		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
 		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigUpperRL", MeshId = "115322100534609",  TextureId = "140198794837319", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },

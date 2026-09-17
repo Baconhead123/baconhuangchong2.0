@@ -1,13 +1,13 @@
--- [[ Rscripts 风险提示 ]]
--- 此脚本未经过 rscripts.net 验证。请谨慎使用。
+-- [[ Rscripts Risk Notice ]]
+-- This script is not verified by rscripts.net. Deal with caution.
 --
--- 注意安全：
---   • 不要在非官方 Roblox 网站或仿冒域名上登录。
---   • 真正的 Roblox 链接使用 roblox.com（检查 .com 结尾）。
---   • 将假的 Roblox 登录 / “领取奖励”页面视为钓鱼。
--- [[ Rscripts 风险提示结束 ]]
+-- Stay safe:
+--   • Never log in on unofficial Roblox sites or lookalike domains.
+--   • Real Roblox links use roblox.com (check the .com ending).
+--   • Treat fake Roblox login / "claim reward" pages as phishing.
+-- [[ End Rscripts Risk Notice ]]
 local FEManager = loadstring(game:HttpGet("https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt"))()
--- 表
+-- tables
 local ScriptOptions = {
 	Settings = {
 		AnimationSpeed = 1.25;
@@ -29,9 +29,9 @@ local ScriptOptions = {
 		ToolFling = false,
 	};
 	Reanimate_Settings = {
-		Frequency = 6, -- 这基本上就是振荡的速度
-		Amplification = 6, -- 这是振荡的幅度
-		FrontOffset = 2.5, -- 这是预测时你位于玩家前方的距离
+		Frequency = 6, -- this is basically how fast the oscillation goes
+		Amplification = 6, -- this is how far the oscillation goes
+		FrontOffset = 2.5, -- this is how much youre in front of the player during prediction
 	}
 }
 local AnimatorCache = {
@@ -81,24 +81,24 @@ for i, v in pairs(Directories) do FEManager.EnsureFolder(v) end
 task.spawn(function()
 	StarterGui = cloneref(game:GetService("StarterGui"))
 	StarterGui:SetCore("SendNotification",{
-		Title = "Cherry 的俱乐部",
-		Text = "文件正在下载，下载完成后你可能需要再次运行脚本。（如果你已经有这些文件，请忽略此消息）",
+		Title = "Cherry's Club",
+		Text = "Files are currently downloading, you may need to run the script again after files download. (ignore this if you already have them)",
 		Duration = 5,
 	})
 	FEManager.DownloadFile(Directories.RBXMs, "Locust.rbxm", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm")
 	StarterGui:SetCore("SendNotification",{
-		Title = "Cherry 的俱乐部",
-		Text = "RBXMs 已下载。",
+		Title = "Cherry's Club",
+		Text = "RBXMs Downloaded.",
 		Duration = 2,
 	})
 	FEManager.DownloadFile(Directories.Songs, "LocustTheme.mp3", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3")
  
 end)
--- 效果设置
+-- effects setup
 local script = Services.InsertService:LoadLocalAsset(getcustomasset(Directories.RBXMs.."Locust.rbxm"))
 local Animations = script:WaitForChild("Animations")
 local Objects = script:WaitForChild("Objects")
--- 动画重定向开始
+-- reanim start
 do
 	local Accessories = {}
 	local Aligns = {}
@@ -624,7 +624,7 @@ do
 			tableclear(Aligns)
 			tableclear(Blacklist)
 			tableclear(Accessories)
-			-- 基本上强制删除焊接，因为带有布娃娃的游戏会搞乱这个，导致只有 3 个帽子有效（已修复）
+			-- pretty much FORCE welds to delete cause games with ragdoll messed ts up and only 3 hats worked (fixed)
 			for i, v in next, GetChildren(Rig) do
 				if IsA(v, "Accoutrement") then
 					Destroy(v)
@@ -901,7 +901,7 @@ end
 local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
-		-- 剑 / 矛 骨架
+		-- Swords / Spears Rig
 		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "89519907183882", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
@@ -911,7 +911,7 @@ Empyrean = Start({
 		{ Name = "RigUpperRA", MeshId = "17605983196",  TextureId = "17606581728", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
-		-- 方块骨架
+		-- Block Rig
 		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
 		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
@@ -949,7 +949,7 @@ Empyrean = Start({
 	TeleportRadius = 12,
 	UseServerBreakJoints = true,
 })
--- 角色设置
+-- character setup
 local Camera = workspace.CurrentCamera
 local Player = Services.Players.LocalPlayer
 local Character = Empyrean.Rig
@@ -967,7 +967,7 @@ end
 Theme.Volume = 1
 Theme.Looped = true
 Theme:Play()
--- 动画器模块
+-- animator module
 local Contains = function(Table, Check)
 	for Index, Value in next, Table do 
 		if rawequal(Check, Index) or rawequal(Check, Value) then 
@@ -1000,7 +1000,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 	Class.Speed = 1
 	Class.KeepLast = 0
 	local Keyframes = KeyframeSequence:GetKeyframes()
-	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- 感谢 10k_i，Roblox 默认不会排序。
+	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- Thanks 10k_i, roblox not sorting by default.
 	Class.Length = Keyframes[#(Keyframes)].Time
 	local Yield = function(Seconds)
 		local Elapsed = 0
@@ -1009,7 +1009,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 			Elapsed += Services.RunService.Heartbeat:Wait()
 		until Elapsed >= Target
 	end
-	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- Moon Suite 修复
+	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- Moon Suite Fix
 		local Children = Sequence:GetChildren()
 		for i = 1, #(Children) do
 			if Children[i]:FindFirstChild("Torso") then
@@ -1119,7 +1119,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 	end
 	return Class
 end
--- 动画器函数
+-- animator functions
 local PlayAnim = function(Rig: Model, Animation: KeyframeSequence, AnimSpeed: number)
 	if not AnimatorCache.Rigs[Rig] then
 		AnimatorCache.Rigs[Rig] = {}
@@ -1160,7 +1160,7 @@ local RestoreMovement = function()
 		PlayAnim(Locust, Animations.Walk, .1)
 	end
 end
--- 函数
+-- functions
 local PlayUISFX = function(Audio: number)
 	local Sound = Instance.new("Sound", workspace)
 	Sound.SoundId = "rbxassetid://" .. Audio
@@ -1242,7 +1242,7 @@ local NewHitbox = function(Position: Vector3 | CFrame, Size: number, HitSound: n
 	local HitboxFade = game:GetService("TweenService"):Create(Hitbox, TweenInfo.new(0.5), {Transparency = 1})
 	HitboxFade:Play()
 	game:GetService("Debris"):AddItem(Hitbox, 0.5)
-	return Hitbox -- 添加这个是为了让你可以把它做成动画，甚至把它放到其他地方
+	return Hitbox -- added incase you wanna make it animated or even position it somewhere else
 end
 local SetWalkSpeed = function(Speed: number)
 	Humanoid.WalkSpeed = Speed
@@ -1250,7 +1250,7 @@ end
 local SetRootAnchored = function(Anchored: boolean)
 	RootPart.Anchored = Anchored
 end
--- 攻击
+-- attacks
 local ToggleCrouch = function()
 	States.Movement.Crouching = not States.Movement.Crouching
 	States.Movement.Idle = false
@@ -1312,7 +1312,7 @@ local Kill = function(Target)
 	States.Input.Debounce = false
 	RestoreMovement()
 end
--- 输入
+-- input
 local KeyDown = Services.UserInputService.InputBegan:Connect(function(Key, GPE)
 	if GPE then return end
 	if Key.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -1350,7 +1350,7 @@ local InfiniteJump = Services.UserInputService.JumpRequest:Connect(function()
 	end
 end)
 table.insert(ScriptCache.ActiveConnections, InfiniteJump)
--- 移动端 UI
+-- mobile ui
 local GUI = script:WaitForChild("UIs").MobileUI
 GUI.Parent = game:GetService("CoreGui")
 table.insert(ScriptCache.TrashBin, GUI)
@@ -1368,7 +1368,7 @@ GUI.AbilitiesUI["Waypoint"].MouseButton1Down:connect(function() Waypoint() end)
 GUI.AbilitiesUI["Sit"].MouseButton1Down:connect(function() ToggleSit() end)
 GUI.AbilitiesUI["Crouch"].MouseButton1Down:connect(function() ToggleCrouch() end)
 GUI.AbilitiesUI["Sprint"].MouseButton1Down:connect(function() States.Input.Shift = not States.Input.Shift end)
--- 设置 UI
+-- settings ui
 local MainGUI = script.UIs:WaitForChild("MainGUI")
 MainGUI.Parent = game:GetService("CoreGui")
 table.insert(ScriptCache.TrashBin, MainGUI)
@@ -1396,7 +1396,7 @@ local SetupToggle = function(Setting: boolean)
 		Button.BackgroundColor3 = ScriptOptions.Settings[Setting] and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
 	end)
 end
-local SetupTextBox = function(Setting: string | number) -- 目前只用于 rigsize（我想不会有其他文本框了）
+local SetupTextBox = function(Setting: string | number) -- currently only used in the rigsize (no other textboxes will exist i think)
 	local Object = SettingsHolder:FindFirstChild(Setting)
 	if not Object then return end
 	local TextBox = Object:FindFirstChildWhichIsA("TextBox")
@@ -1440,10 +1440,10 @@ SettingsHolder.TPToNearestSpawn.Button.MouseButton1Click:Connect(function()
 	if Spawn then
 		RootPart.CFrame = Spawn.CFrame + Vector3.new(0, 5, 0)
 	else
-		warn("附近没有人能帮忙。")
+		warn("No one is around to help.")
 	end
 end)
--- RunService 连接
+-- runservice connection
 local RunServiceConnection = Services.RunService.Heartbeat:Connect(function(dt)
 	if States.Input.Debounce then
 		StopAnim(Locust,Animations.Idle)
@@ -1527,7 +1527,7 @@ local RunServiceConnection = Services.RunService.Heartbeat:Connect(function(dt)
 end)
 table.insert(ScriptCache.ActiveConnections, RunServiceConnection)
 Empyrean.BindableEvent.Event:Once(function()
-	print("正在重置。")
+	print("Resetting.")
 	for i, v in ScriptCache.TrashBin do
 		v:Destroy()
 	end

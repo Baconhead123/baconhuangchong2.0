@@ -1,13 +1,13 @@
 -- [[ Rscripts 风险提示 ]]
 -- 此脚本未经过 rscripts.net 验证。请谨慎使用。
 --
--- 安全提示：
---   • 永远不要在非官方Roblox网站或仿冒域名登录账号。
---   • 真正的Roblox链接以 roblox.com 结尾（检查 .com 后缀）。
---   • 将虚假Roblox登录/“领取奖励”页面视为钓鱼网站。
+-- 注意安全：
+--   • 不要在非官方 Roblox 网站或仿冒域名上登录。
+--   • 真正的 Roblox 链接使用 roblox.com（检查 .com 结尾）。
+--   • 将假的 Roblox 登录 / “领取奖励”页面视为钓鱼。
 -- [[ Rscripts 风险提示结束 ]]
 local FEManager = loadstring(game:HttpGet("https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt"))()
--- 数据表
+-- 表
 local ScriptOptions = {
 	Settings = {
 		AnimationSpeed = 1.25;
@@ -29,9 +29,9 @@ local ScriptOptions = {
 		ToolFling = false,
 	};
 	Reanimate_Settings = {
-		Frequency = 6, -- 这是振荡的速度
+		Frequency = 6, -- 这基本上就是振荡的速度
 		Amplification = 6, -- 这是振荡的幅度
-		FrontOffset = 2.5, -- 预测时你在目标玩家前方多少距离
+		FrontOffset = 2.5, -- 这是预测时你位于玩家前方的距离
 	}
 }
 local AnimatorCache = {
@@ -81,24 +81,24 @@ for i, v in pairs(Directories) do FEManager.EnsureFolder(v) end
 task.spawn(function()
 	StarterGui = cloneref(game:GetService("StarterGui"))
 	StarterGui:SetCore("SendNotification",{
-		Title = "Cherry's Club",
-		Text = "文件正在下载，如果文件未下载完成，你可能需要重新运行脚本。(如果已经下载可忽略此提示)",
+		Title = "Cherry 的俱乐部",
+		Text = "文件正在下载，下载完成后你可能需要再次运行脚本。（如果你已经有这些文件，请忽略此消息）",
 		Duration = 5,
 	})
 	FEManager.DownloadFile(Directories.RBXMs, "Locust.rbxm", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm")
 	StarterGui:SetCore("SendNotification",{
-		Title = "Cherry's Club",
-		Text = "RBXM资源下载完成。",
+		Title = "Cherry 的俱乐部",
+		Text = "RBXMs 已下载。",
 		Duration = 2,
 	})
 	FEManager.DownloadFile(Directories.Songs, "LocustTheme.mp3", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3")
  
 end)
--- 效果初始化
+-- 效果设置
 local script = Services.InsertService:LoadLocalAsset(getcustomasset(Directories.RBXMs.."Locust.rbxm"))
 local Animations = script:WaitForChild("Animations")
 local Objects = script:WaitForChild("Objects")
--- 重动画模块开始
+-- 动画重定向开始
 do
 	local Accessories = {}
 	local Aligns = {}
@@ -624,7 +624,7 @@ do
 			tableclear(Aligns)
 			tableclear(Blacklist)
 			tableclear(Accessories)
-			-- 强制删除焊接，修复游戏布娃娃仅支持3个帽子的问题（已修复）
+			-- 基本上强制删除焊接，因为带有布娃娃的游戏会搞乱这个，导致只有 3 个帽子有效（已修复）
 			for i, v in next, GetChildren(Rig) do
 				if IsA(v, "Accoutrement") then
 					Destroy(v)
@@ -901,7 +901,7 @@ end
 local Rad = math.rad
 Empyrean = Start({
 	Accessories = {
-		-- 剑/矛 骨骼
+		-- 剑 / 矛 骨架
 		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "89519907183882", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperRL", MeshId = "76624859423759",  TextureId = "81203167910667", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), Rad(-180), Rad(135)) },
 		{ Name = "RigUpperLL", MeshId = "76624859423759",  TextureId = "124580012086562", Offset = CFrame.new(0, 1.25, 0) * CFrame.Angles(Rad(0), 0, Rad(135)) },
@@ -911,7 +911,7 @@ Empyrean = Start({
 		{ Name = "RigUpperRA", MeshId = "17605983196",  TextureId = "17606581728", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
-		-- 方块骨骼
+		-- 方块骨架
 		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
 		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
@@ -949,7 +949,7 @@ Empyrean = Start({
 	TeleportRadius = 12,
 	UseServerBreakJoints = true,
 })
--- 角色初始化
+-- 角色设置
 local Camera = workspace.CurrentCamera
 local Player = Services.Players.LocalPlayer
 local Character = Empyrean.Rig
@@ -967,7 +967,7 @@ end
 Theme.Volume = 1
 Theme.Looped = true
 Theme:Play()
--- 动画模块
+-- 动画器模块
 local Contains = function(Table, Check)
 	for Index, Value in next, Table do 
 		if rawequal(Check, Index) or rawequal(Check, Value) then 
@@ -995,12 +995,12 @@ for i, v in pairs(Locust:GetDescendants()) do
 end
 local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequence)
 	local Sequence = KeyframeSequence
-	assert(Sequence:IsA("KeyframeSequence"), "找不到关键帧序列！")
+	assert(Sequence:IsA("KeyframeSequence"), "KeyframeSequence Missing!")
 	local Class = {}
 	Class.Speed = 1
 	Class.KeepLast = 0
 	local Keyframes = KeyframeSequence:GetKeyframes()
-	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- 感谢10k_i，Roblox默认不会自动排序
+	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- 感谢 10k_i，Roblox 默认不会排序。
 	Class.Length = Keyframes[#(Keyframes)].Time
 	local Yield = function(Seconds)
 		local Elapsed = 0
@@ -1009,7 +1009,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 			Elapsed += Services.RunService.Heartbeat:Wait()
 		until Elapsed >= Target
 	end
-	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- MoonSuite修复
+	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- Moon Suite 修复
 		local Children = Sequence:GetChildren()
 		for i = 1, #(Children) do
 			if Children[i]:FindFirstChild("Torso") then
@@ -1055,4 +1055,483 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 					Class.TimePosition = 0
 				end
 			end)
-			repeat game:GetService("
+			repeat game:GetService("RunService").Heartbeat:Wait()
+				Class.TimePosition += (1 * Class.Speed) / (60 * Class.Speed) 
+			until Class.IsPlaying == false or Class.Stopped ~= false
+		end)
+		task.spawn(function()
+			if FadeIn ~= nil then
+				task.wait(1/55)
+				task.spawn(function()
+					local Frames = Keyframes[1]:GetDescendants()
+					for i = 1, #(Frames) do 
+						local Pose = Frames[i]
+						if Contains(AnimatorCache.Joints, Pose.Name) then 
+							task.spawn(function()
+								for i = 1, 2 do
+									Edit(AnimatorCache.Joints[Pose.Name], AnimatorCache.AnimDefaults[Pose.Name] * Pose.CFrame, FadeIn, Pose.EasingStyle, Pose.EasingDirection)
+									task.wait()
+								end
+							end)
+						end
+					end
+				end)
+				Yield(FadeIn)
+			end
+			repeat
+				for K = 1, #(Keyframes) do 
+					local K0, K1, K2 = Keyframes[K-1], Keyframes[K], Keyframes[K+1]
+					if Class.Stopped ~= true then
+						if K0 ~= nil then 
+							Yield(K1.Time - K0.Time)
+						end
+						task.spawn(function()
+							for i = 1, #(K1:GetDescendants()) do 
+								local Pose = K1:GetDescendants()[i]
+								if Contains(AnimatorCache.Joints, Pose.Name) then 
+									local Duration = K2 ~= nil and (K2.Time - K1.Time) / Class.Speed or 0.5
+									Edit(AnimatorCache.Joints[Pose.Name], AnimatorCache.AnimDefaults[Pose.Name] * Pose.CFrame, Duration, Pose.EasingStyle, Pose.EasingDirection)
+								end
+							end
+						end)
+						if K == #(Keyframes) and Class.KeepLast > 0 then
+							Yield(Class.KeepLast)
+						end
+						Reached:Fire(K1.Name)
+					else
+						break
+					end
+				end
+				Completion:Fire()
+			until Class.Looped ~= true or Class.Stopped ~= false
+			Class.IsPlaying = false
+		end)
+	end
+	Class["Stop"] = function()
+		Class.Stopped = true
+		Class.IsPlaying = false
+	end
+	Class["AdjustSpeed"] = function(self, Speed)
+		if Speed < 0 then
+			Speed += (Speed*2)
+		end
+		Class.Speed = Speed or Class.Speed
+	end
+	return Class
+end
+-- 动画器函数
+local PlayAnim = function(Rig: Model, Animation: KeyframeSequence, AnimSpeed: number)
+	if not AnimatorCache.Rigs[Rig] then
+		AnimatorCache.Rigs[Rig] = {}
+	end
+	if not AnimatorCache.Rigs[Rig][Animation.Name] then
+		AnimatorCache.Rigs[Rig][Animation.Name] = LoadBoneAnimation(Rig, Animation)
+	end
+	for Name, Track in pairs(AnimatorCache.Rigs[Rig]) do
+		if Name ~= Animation.Name then
+			Track:Stop()
+		end
+	end
+	local AnimInstance = AnimatorCache.Rigs[Rig][Animation.Name]
+	if not AnimInstance.IsPlaying then
+		AnimInstance:Play(AnimSpeed or 1)
+	end
+	return AnimInstance
+end
+local StopAnim = function(Rig: Model, Animation: KeyframeSequence)
+	if not AnimatorCache.Rigs[Rig] then
+		AnimatorCache.Rigs[Rig] = {}
+	end
+	if not AnimatorCache.Rigs[Rig][Animation.Name] then
+		AnimatorCache.Rigs[Rig][Animation.Name] = LoadBoneAnimation(Rig, Animation)
+	end
+	AnimatorCache.Rigs[Rig][Animation.Name]:Stop()
+end
+local RestoreMovement = function()
+	if RootPart.Velocity.Magnitude < 1 and workspace:FindPartOnRay(Ray.new(RootPart.Position, (CFrame.new(RootPart.Position, RootPart.Position + Vector3.new(0, -1, 0))).LookVector * 4), Character) then
+		States.Movement.Idle = true
+		States.Movement.Walking = false
+		States.Movement.Running = false
+		PlayAnim(Locust, Animations.Idle, .1)
+	elseif RootPart.Velocity.Magnitude > 1 and workspace:FindPartOnRay(Ray.new(RootPart.Position, (CFrame.new(RootPart.Position, RootPart.Position + Vector3.new(0, -1, 0))).LookVector * 4), Character) then
+		States.Movement.Idle = false
+		States.Movement.Walking = true
+		States.Movement.Running = false
+		PlayAnim(Locust, Animations.Walk, .1)
+	end
+end
+-- 函数
+local PlayUISFX = function(Audio: number)
+	local Sound = Instance.new("Sound", workspace)
+	Sound.SoundId = "rbxassetid://" .. Audio
+	Sound.Volume = 1
+	Sound.PlayOnRemove = true
+	Sound:Destroy()
+	return Sound
+end
+local PlaySFX = function(Audio: number)
+	local Sound = Instance.new("Sound", RootPart)
+	Sound.SoundId = "rbxassetid://" .. Audio
+	Sound.Volume = 1
+	Sound.PlayOnRemove = true
+	Sound:Destroy()
+	return Sound
+end
+local PlaySong = function(Parent: Instance, Audio: number)
+	local Sound = Instance.new("Sound", Parent)
+	Sound.Volume = 1
+	Sound.SoundId = Audio
+	return Sound
+end
+local FlashHitHighlight = function(Target: Model?)
+	if not Target or not Target:IsA("Model") then return end
+	if Target:FindFirstChild("HitHighlight") then return end 
+	local Highlight = Instance.new("Highlight")
+	Highlight.Name = "HitHighlight"
+	Highlight.Adornee = Target
+	Highlight.FillColor = Color3.fromRGB(0, 0, 0)
+	Highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+	Highlight.FillTransparency = 1
+	Highlight.OutlineTransparency = 1
+	Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+	Highlight.Parent = Target
+	local FlashIn = Services.TweenService:Create(Highlight, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {FillTransparency = 0.3, OutlineTransparency = 0})
+	local FadeOut = Services.TweenService:Create(Highlight,TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {FillTransparency = 1,OutlineTransparency = 1})
+	FlashIn:Play()
+	FlashIn.Completed:Once(function() FadeOut:Play() end)
+	FadeOut.Completed:Once(function() Highlight:Destroy() end)
+end
+local CanHit = function(Target: Instance)
+	local Time = os.clock()
+	if ScriptCache.HitHumanoids[Target] and Time < ScriptCache.HitHumanoids[Target] then
+		return false
+	end
+	ScriptCache.HitHumanoids[Target] = Time + 1.15
+	return true
+end
+local NewHitbox = function(Position: Vector3 | CFrame, Size: number, HitSound: number)
+	local Hitbox = Instance.new("Part")
+	Hitbox.Size = Size or Vector3.new(4, 4, 4)
+	Hitbox.Color = ScriptOptions.Customization.HitboxColor
+	Hitbox.Material = Enum.Material.ForceField
+	Hitbox.Transparency = 0.5
+	Hitbox.Anchored = true
+	Hitbox.CanCollide = false
+	Hitbox.CanQuery = false
+	Hitbox.CanTouch = true
+	Hitbox.CFrame = Position or RootPart.CFrame -- RootPart.CFrame * CFrame.new(0, 0, -(4 / 2 + 2))
+	Hitbox.Parent = workspace
+	local OverlapParams = OverlapParams.new()
+	OverlapParams.FilterType = Enum.RaycastFilterType.Exclude
+	OverlapParams.FilterDescendantsInstances = {Character}
+	local HitboxParts = workspace:GetPartsInPart(Hitbox, OverlapParams)
+	for i, v in pairs(HitboxParts) do
+		local Target = v:FindFirstAncestorOfClass("Model")
+		if Target and Target:FindFirstChildOfClass("Humanoid")  then
+			local TargetRoot = Target:FindFirstChild("HumanoidRootPart")
+			if TargetRoot and CanHit(Target) then
+				FlashHitHighlight(Target)
+				if ScriptOptions.Settings.Fling then
+					Empyrean.Fling(Target, ScriptOptions)
+					PlaySFX(ScriptOptions.Customization.Hitmarker)
+					PlaySFX(HitSound or 108515070727256)
+				end
+			end
+		end
+	end
+	local HitboxFade = game:GetService("TweenService"):Create(Hitbox, TweenInfo.new(0.5), {Transparency = 1})
+	HitboxFade:Play()
+	game:GetService("Debris"):AddItem(Hitbox, 0.5)
+	return Hitbox -- 添加这个是为了让你可以把它做成动画，甚至把它放到其他地方
+end
+local SetWalkSpeed = function(Speed: number)
+	Humanoid.WalkSpeed = Speed
+end
+local SetRootAnchored = function(Anchored: boolean)
+	RootPart.Anchored = Anchored
+end
+-- 攻击
+local ToggleCrouch = function()
+	States.Movement.Crouching = not States.Movement.Crouching
+	States.Movement.Idle = false
+	States.Movement.Walking = false
+	States.Movement.Running = false
+	States.Movement.Sitting = false
+end
+local ToggleSit = function()
+	States.Movement.Sitting = not States.Movement.Sitting
+	States.Movement.Crouching = false
+	States.Movement.Idle = false
+	States.Movement.Walking = false
+	States.Movement.Running = false
+end
+local Waypoint = function()
+	if not States.Waypoint.SavedPosition then
+		States.Waypoint.SavedPosition = RootPart.Position
+		if States.Waypoint.TVLocation then States.Waypoint.TVLocation:Destroy() end
+		local Part = Objects:WaitForChild("TeleportPart"):Clone()
+		Part.CFrame = CFrame.new(States.Waypoint.SavedPosition + Vector3.new(0, -2.975, 0))
+		Part.Parent = workspace
+		States.Waypoint.TVLocation = Part
+	else
+		if States.Input.Debounce then return end
+		if States.Waypoint.TVLocation then States.Waypoint.TVLocation:Destroy() States.Waypoint.TVLocation = nil end
+		SetRootAnchored(true)
+		States.Input.Debounce = true
+		local TeleportAnim = PlayAnim(Locust, Animations.Spawn, 0.1)
+		RootPart.CFrame = CFrame.new(States.Waypoint.SavedPosition)
+		TeleportAnim.Completed:Wait()
+		States.Waypoint.SavedPosition   = nil
+		States.Input.Debounce = false
+		SetRootAnchored(false)
+		RestoreMovement()
+	end
+end
+local ToggleKillMode = function()
+	States.Input.KillMode = not States.Input.KillMode
+end
+local Kill = function(Target)
+	if States.Input.Debounce then return end
+	if not States.Input.KillMode then return end
+	if not Target then return end
+	local Model = Target and Target:FindFirstAncestorOfClass("Model")
+	if not Model or not Model:FindFirstChildOfClass("Humanoid") then return end
+	local TargetRoot = Model:FindFirstChild("HumanoidRootPart")
+	if not TargetRoot then return end
+	if not CanHit(Model) then return end
+	States.Input.Debounce = true
+	SetRootAnchored(true)
+	local KillAnim = PlayAnim(Locust, Animations.Kill, 0.1)
+	FlashHitHighlight(Model)
+	if ScriptOptions.Settings.Fling then
+		Empyrean.Fling(Target, ScriptOptions.FlingOptions)
+		PlaySFX(ScriptOptions.Customization.Hitmarker or 108515070727256)
+	end
+	KillAnim.Completed:Wait()
+	SetRootAnchored(false)
+	States.Input.Debounce = false
+	RestoreMovement()
+end
+-- 输入
+local KeyDown = Services.UserInputService.InputBegan:Connect(function(Key, GPE)
+	if GPE then return end
+	if Key.UserInputType == Enum.UserInputType.MouseButton1 then
+		Kill(Mouse.Target)
+	end
+	if Key.KeyCode == Enum.KeyCode.Q then
+		ToggleCrouch()
+	end
+	if Key.KeyCode == Enum.KeyCode.C then
+		ToggleSit()
+	end
+	if Key.KeyCode == Enum.KeyCode.X then
+		ToggleKillMode()
+	end
+	if Key.KeyCode == Enum.KeyCode.E then
+		Waypoint()
+	end
+	if Key.KeyCode == Enum.KeyCode.T then
+	end
+	if Key.KeyCode == Enum.KeyCode.LeftShift then
+		States.Input.Shift = true
+	end
+end)
+table.insert(ScriptCache.ActiveConnections, KeyDown)
+local KeyUp = Services.UserInputService.InputEnded:Connect(function(Key, GPE)
+	if GPE then return end
+	if Key.KeyCode == Enum.KeyCode.LeftShift then
+		States.Input.Shift = false
+	end
+end)
+table.insert(ScriptCache.ActiveConnections, KeyUp)
+local InfiniteJump = Services.UserInputService.JumpRequest:Connect(function()
+	if ScriptOptions.Settings.InfiniteJump and Humanoid then
+		Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+end)
+table.insert(ScriptCache.ActiveConnections, InfiniteJump)
+-- 移动端 UI
+local GUI = script:WaitForChild("UIs").MobileUI
+GUI.Parent = game:GetService("CoreGui")
+table.insert(ScriptCache.TrashBin, GUI)
+local UpdateUI = function()
+	local LastInput = Services.UserInputService:GetLastInputType()
+	if LastInput == Enum.UserInputType.Touch
+	then GUI.Enabled = true
+	else GUI.Enabled = false
+	end
+end
+UpdateUI()
+Services.UserInputService.LastInputTypeChanged:Connect(UpdateUI)
+GUI.AbilitiesUI["ToggleKill"].MouseButton1Down:connect(function() ToggleKillMode() end)
+GUI.AbilitiesUI["Waypoint"].MouseButton1Down:connect(function() Waypoint() end)
+GUI.AbilitiesUI["Sit"].MouseButton1Down:connect(function() ToggleSit() end)
+GUI.AbilitiesUI["Crouch"].MouseButton1Down:connect(function() ToggleCrouch() end)
+GUI.AbilitiesUI["Sprint"].MouseButton1Down:connect(function() States.Input.Shift = not States.Input.Shift end)
+-- 设置 UI
+local MainGUI = script.UIs:WaitForChild("MainGUI")
+MainGUI.Parent = game:GetService("CoreGui")
+table.insert(ScriptCache.TrashBin, MainGUI)
+local SettingsFrame = MainGUI:WaitForChild("SettingsFrame")
+local Vignette = MainGUI:WaitForChild("Vignette")
+local SettingsHolder = SettingsFrame:WaitForChild("SettingsHolder")
+local FloatingButton = MainGUI:WaitForChild("FloatingButton")
+local UIDragDetector = Instance.new("UIDragDetector", FloatingButton)
+UIDragDetector.DragStart:Connect(function()
+	SettingsFrame.Visible = not SettingsFrame.Visible
+	PlayUISFX(18755588842)
+end)
+FloatingButton.MouseEnter:Connect(function()
+	PlayUISFX(122453173810540)
+end)
+local SetupToggle = function(Setting: boolean)
+	local Object = SettingsHolder:FindFirstChild(Setting)
+	if not Object then return end
+	local Button = Object:FindFirstChildWhichIsA("TextButton")
+	if not Button then return end
+	Button.BackgroundColor3 = ScriptOptions.Settings[Setting] and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+	Button.MouseButton1Click:Connect(function()
+		PlayUISFX(18755588842)
+		ScriptOptions.Settings[Setting] = not ScriptOptions.Settings[Setting]
+		Button.BackgroundColor3 = ScriptOptions.Settings[Setting] and Color3.fromRGB(0,255,0) or Color3.fromRGB(255,0,0)
+	end)
+end
+local SetupTextBox = function(Setting: string | number) -- 目前只用于 rigsize（我想不会有其他文本框了）
+	local Object = SettingsHolder:FindFirstChild(Setting)
+	if not Object then return end
+	local TextBox = Object:FindFirstChildWhichIsA("TextBox")
+	if not TextBox then return end
+	TextBox.Text = tostring(ScriptOptions.Settings[Setting])
+	TextBox.FocusLost:Connect(function()
+		local Value = tonumber(TextBox.Text)
+		if Value then
+			ScriptOptions.Settings[Setting] = math.clamp(Value, 0.5, 5)
+		else
+			TextBox.Text = tonumber(ScriptOptions.Settings[Setting])
+		end
+	end)
+end
+for i, v in pairs(ScriptOptions.Settings) do
+	local Object = SettingsHolder:FindFirstChild(i)
+	if Object then
+		if Object:FindFirstChild("Button") then
+			SetupToggle(i)
+		elseif Object:FindFirstChild("Value") then
+			SetupTextBox(i)
+		end
+	end
+end
+SettingsHolder.TPToNearestSpawn.Button.MouseButton1Click:Connect(function()
+	local RootPart = Character:FindFirstChild("HumanoidRootPart")
+	local GetClosestSpawn = function()
+		local ClosestSpawn, ClosestDistance = nil, math.huge
+		for i, v in pairs(workspace:GetDescendants()) do
+			if v:IsA("SpawnLocation") then
+				local Distance = (RootPart.Position - v.Position).Magnitude
+				if Distance < ClosestDistance then
+					ClosestSpawn = v
+					ClosestDistance = Distance
+				end
+			end
+		end
+		return ClosestSpawn
+	end
+	local Spawn = GetClosestSpawn()
+	if Spawn then
+		RootPart.CFrame = Spawn.CFrame + Vector3.new(0, 5, 0)
+	else
+		warn("附近没有人能帮忙。")
+	end
+end)
+-- RunService 连接
+local RunServiceConnection = Services.RunService.Heartbeat:Connect(function(dt)
+	if States.Input.Debounce then
+		StopAnim(Locust,Animations.Idle)
+		StopAnim(Locust,Animations.Walk)
+		StopAnim(Locust,Animations.Sprint)
+	end
+	if ScriptOptions.Settings.CameraEffects then
+		local TargetOffset = States.Movement.Crouching and Vector3.new(0, 5, 0) or Vector3.new(0, 10, 0)
+		Humanoid.CameraOffset = Humanoid.CameraOffset:Lerp(TargetOffset, 0.1)
+	else
+		Humanoid.CameraOffset = Humanoid.CameraOffset:Lerp(Vector3.zero, 0.1)
+	end
+	if not States.Input.Debounce then
+		if States.Movement.Crouching then
+			SetWalkSpeed(3)
+		elseif States.Input.Shift then
+			SetWalkSpeed(24)
+		else
+			SetWalkSpeed(6)
+		end
+	end
+	if ScriptOptions.Settings.FOVEffects then
+		Camera.FieldOfView = 80 + Theme.PlaybackLoudness / 100
+		Vignette.ImageTransparency = 1 - Theme.PlaybackLoudness / 900
+	else
+		Camera.FieldOfView = 70
+		Vignette.ImageTransparency = 1
+	end
+	if ScriptOptions.Settings.Music then
+		Theme.Playing = true
+	else
+		Theme.Playing = false
+	end
+	local RootPartOrigin = RootPart.Position
+	local Direction = Vector3.new(0, -1, 0) * 4
+	local Params = RaycastParams.new()
+	Params.FilterDescendantsInstances = {Character}
+	Params.FilterType = Enum.RaycastFilterType.Exclude
+	Params.IgnoreWater = true
+	local Result = workspace:Raycast(RootPartOrigin, Direction, Params)
+	local HitFloor = Result and Result.Instance
+	local HitPosition = Result and Result.Position
+	local TorsoVelocity = (RootPart.Velocity).Magnitude
+	local TorsoVerticalVelocity = RootPart.Velocity.Y
+	if TorsoVelocity < 0.001 and HitFloor ~= nil and not States.Input.Debounce then
+		if States.Movement.Crouching then
+			States.Movement.Crouching = true
+			PlayAnim(Locust,Animations.IdleCrouch, 0.1)
+		elseif States.Movement.Sitting then
+			PlayAnim(Locust, Animations.Sit, 0.1) 
+		elseif States.Movement.Idle == false then
+			States.Movement.Idle = true
+			PlayAnim(Locust,Animations.Idle, 0.1)
+		end
+		States.Movement.Walking = false
+		States.Movement.Running = false
+		StopAnim(Locust,Animations.Walk)
+		StopAnim(Locust,Animations.Sprint)
+	elseif TorsoVelocity > 6 and HitFloor ~= nil and not States.Input.Debounce and States.Input.Shift and not States.Movement.Crouching then
+		if States.Movement.Running == false then
+			States.Movement.Running = true
+			PlayAnim(Locust, Animations.Sprint, 0.1)
+		end
+		States.Movement.Idle = false
+		States.Movement.Walking = false
+		StopAnim(Locust,Animations.Idle)
+		StopAnim(Locust,Animations.Walk)
+	elseif TorsoVelocity > 6 and HitFloor ~= nil and not States.Input.Debounce then
+		if States.Movement.Crouching then
+			States.Movement.Walking = true
+			PlayAnim(Locust, Animations.WalkCrouch, 0.1)
+		elseif States.Movement.Walking == false then
+			States.Movement.Walking = true
+			PlayAnim(Locust,Animations.Walk, 0.1)
+		end
+		States.Movement.Idle = false
+		States.Movement.Running = false
+		StopAnim(Locust,Animations.Idle)
+		StopAnim(Locust,Animations.Sprint)
+	end
+end)
+table.insert(ScriptCache.ActiveConnections, RunServiceConnection)
+Empyrean.BindableEvent.Event:Once(function()
+	print("正在重置。")
+	for i, v in ScriptCache.TrashBin do
+		v:Destroy()
+	end
+	for i, v in ScriptCache.ActiveConnections do
+		v:Disconnect()
+	end
+end)

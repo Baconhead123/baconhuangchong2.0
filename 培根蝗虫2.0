@@ -305,73 +305,71 @@ do
 	local TorsoAccessoryId = 70523944235011
 
 	local LoadTorsoAccessory = function(AssetId)
-		local Asset = nil
-		local Loaded = false
+		local Asset
+		local Loaded
 
-		-- Preferred path for Roblox InsertService.
 		Loaded, Asset = pcall(function()
 			return Services.InsertService:LoadAsset(tonumber(AssetId))
 		end)
-
-		-- Executor fallback for environments exposing GetObjects.
 		if not Loaded or not Asset then
 			Loaded, Asset = pcall(function()
 				local Objects = game:GetObjects("rbxassetid://" .. tostring(AssetId))
 				return Objects and Objects[1]
 			end)
 		end
+		if not Loaded or not Asset then return nil end
 
-		if not Loaded or not Asset then
-			return nil
-		end
-
-		local Accessory = nil
-		if IsA(Asset, "Accoutrement") then
-			Accessory = Asset
-		else
-			Accessory = FindFirstChildOfClass(Asset, "Accessory")
-			if not Accessory then
-				Accessory = FindFirstChildOfClass(Asset, "Accoutrement")
-			end
-		end
-
+		local Accessory = IsA(Asset, "Accoutrement") and Asset or FindFirstChildOfClass(Asset, "Accoutrement")
 		if not Accessory then
 			for _, Child in next, GetDescendants(Asset) do
-				if IsA(Child, "Accoutrement") then
-					Accessory = Child
+				if IsA(Child, "Accoutrement") then Accessory = Child break end
+			end
+		end
+		if not Accessory then pcall(Destroy, Asset) return nil end
+
+		local Handle = FindFirstChildOfClassAndName(Accessory, "BasePart", "Handle")
+		if not Handle then pcall(Destroy, Asset) return nil end
+
+		local HandleClone = Clone(Handle)
+		HandleClone.Name = "RigTorso"
+		HandleClone.Anchored = false
+		HandleClone.CanCollide = false
+		HandleClone.CanTouch = false
+		HandleClone.CanQuery = false
+		HandleClone.Massless = true
+		HandleClone.Transparency = 0
+
+		-- Attach the catalog accessory directly to the rig torso. This path does
+		-- not inspect MeshId/TextureId; the catalog AssetId is the only selector.
+		local Target = FindFirstChildOfClassAndName(Rig, "BasePart", "Torso")
+		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "UpperTorso") end
+		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "HumanoidRootPart") end
+		if not Target then pcall(Destroy, Asset) pcall(Destroy, HandleClone) return nil end
+
+		local TargetAttachment
+		for _, A in next, GetDescendants(Target) do
+			if IsA(A, "Attachment") then
+				local Same = HandleClone:FindFirstChild(A.Name, true)
+				if Same and IsA(Same, "Attachment") then
+					TargetAttachment = A
 					break
 				end
 			end
 		end
 
-		if not Accessory then
-			pcall(Destroy, Asset)
-			return nil
-		end
-
-		local Handle = FindFirstChildOfClassAndName(Accessory, "BasePart", "Handle")
-		if not Handle then
-			pcall(Destroy, Asset)
-			return nil
-		end
-
-		local HandleClone = Clone(Handle)
-		HandleClone.Name = "RigTorso"
-		HandleClone.CanCollide = false
-		HandleClone.CanTouch = false
-		HandleClone.CanQuery = false
-		HandleClone.Massless = true
-		HandleClone.Transparency = OptionsRigTransparency
-
-		-- Remove the old torso targets so the catalog accessory is the actual
-		-- object used whenever an existing torso mapping points to RigTorso.
-		for _, Child in next, GetChildren(Rig) do
-			if IsA(Child, "BasePart") and Child.Name == "RigTorso" then
-				Destroy(Child)
-			end
-		end
-
 		HandleClone.Parent = Rig
+		if TargetAttachment then
+			local HandleAttachment = HandleClone:FindFirstChild(TargetAttachment.Name, true)
+			HandleClone.CFrame = TargetAttachment.WorldCFrame * HandleAttachment.CFrame:Inverse()
+		else
+			HandleClone.CFrame = Target.CFrame * CFrame.new(0, -2, 0)
+		end
+
+		local Weld = Instancenew("WeldConstraint")
+		Weld.Part0 = HandleClone
+		Weld.Part1 = Target
+		Weld.Parent = HandleClone
+
 		pcall(Destroy, Asset)
 		return HandleClone
 	end
@@ -1099,7 +1097,11 @@ do
 				if IsA(Descendant, "Attachment") then
 					Attachments[Descendant.Name] = Descendant
 				elseif IsA(Descendant, "BasePart") or IsA(Descendant, "Decal") then
-					Descendant.Transparency = OptionsRigTransparency
+					if Descendant.Name ~= "RigTorso" then
+						Descendant.Transparency = OptionsRigTransparency
+					else
+						Descendant.Transparency = 0
+					end
 				end
 			end
 

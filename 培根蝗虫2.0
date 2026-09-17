@@ -301,97 +301,95 @@ do
 				end
 			end
 		elseif IsA(Descendant, "Attachment") then
-			local Attachment = Attachments[Descendant.Name]
-			if Attachment then
-				local Parent = Descendant.Parent
-				if IsA(Parent, "BasePart") then
-					local MeshId = nil
-					local TextureId = nil
-					if IsA(Parent, "MeshPart") then
-						MeshId = Parent.MeshId
-						TextureId = Parent.TextureID
-					else
-						local SpecialMesh = FindFirstChildOfClass(Parent, "SpecialMesh")
-						if SpecialMesh then
-							MeshId = SpecialMesh.MeshId
-							TextureId = SpecialMesh.TextureId
-						end
+			-- 【彻底修复】删除了 local Attachment = Attachments[Descendant.Name] 和 if Attachment then 的限制，不再要求名字匹配
+			local Parent = Descendant.Parent
+			if IsA(Parent, "BasePart") then
+				local MeshId = nil
+				local TextureId = nil
+				if IsA(Parent, "MeshPart") then
+					MeshId = Parent.MeshId
+					TextureId = Parent.TextureID
+				else
+					local SpecialMesh = FindFirstChildOfClass(Parent, "SpecialMesh")
+					if SpecialMesh then
+						MeshId = SpecialMesh.MeshId
+						TextureId = SpecialMesh.TextureId
 					end
-					if MeshId then
-						for Index, Table in next, Accessories do
-							-- 修改：只认 MeshId
-							if Table.MeshId == MeshId then
-								local Handle = Table.Handle
-								tableinsert(Aligns, {
-									LastPosition = Handle.Position,
-									Offset = CFrameidentity,
-									Part0 = Parent,
-									Part1 = Handle
-								})
-								return
-							end
-						end
-						for Index, Table in next, OptionsAccessories do
-							-- 修改：只认 MeshId
-							if MeshId and stringfind(MeshId, Table.MeshId) then
-								local Instance = nil
-								local TableName = Table.Name
-								local TableNames = Table.Names
-								if TableName then
-									Instance = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
-								else
-									for Index, TableName in next, TableNames do
-										local Child = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
-										if not ( TableNames[Index + 1] and Blacklist[Child] ) then
-											Instance = Child
-											break
-										end
-									end
-								end
-								if Instance then
-									local Blacklisted = Blacklist[Instance]
-									-- 修改：只认 MeshId
-									if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
-										tableinsert(Aligns, {
-											Offset = Table.Offset,
-											Part0 = Parent,
-											Part1 = Instance
-										})
-										Blacklist[Instance] = { MeshId = MeshId }
-										return
-									end
-								end
-							end
-						end
-						local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
-						if Accoutrement and IsA(Accoutrement, "Accoutrement") then
-							local AccoutrementClone = Clone(Accoutrement)
-							local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
-							HandleClone.Transparency = OptionsRigTransparency
-							for Index, Descendant in next, GetDescendants(HandleClone) do
-								if IsA(Descendant, "JointInstance") then
-									Destroy(Descendant)
-								end
-							end
-							local AccessoryWeld = Instancenew("Weld")
-							AccessoryWeld.C0 = Descendant.CFrame
-							AccessoryWeld.C1 = Attachment.CFrame
-							AccessoryWeld.Name = "AccessoryWeld"
-							AccessoryWeld.Part0 = HandleClone
-							AccessoryWeld.Part1 = Attachment.Parent
-							AccessoryWeld.Parent = HandleClone
-							AccoutrementClone.Parent = Rig
-							tableinsert(Accessories, {
-								Handle = HandleClone,
-								MeshId = MeshId,
-								TextureId = TextureId
-							})
+				end
+				if MeshId then
+					for Index, Table in next, Accessories do
+						-- 修改：只认 MeshId
+						if Table.MeshId == MeshId then
+							local Handle = Table.Handle
 							tableinsert(Aligns, {
+								LastPosition = Handle.Position,
 								Offset = CFrameidentity,
 								Part0 = Parent,
-								Part1 = HandleClone
+								Part1 = Handle
 							})
+							return
 						end
+					end
+					for Index, Table in next, OptionsAccessories do
+						-- 修改：只认 MeshId
+						if MeshId and stringfind(MeshId, Table.MeshId) then
+							local Instance = nil
+							local TableName = Table.Name
+							local TableNames = Table.Names
+							if TableName then
+								Instance = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
+							else
+								for Index, TableName in next, TableNames do
+									local Child = FindFirstChildOfClassAndName(Rig, "BasePart", TableName)
+									if not ( TableNames[Index + 1] and Blacklist[Child] ) then
+										Instance = Child
+										break
+									end
+								end
+							end
+							if Instance then
+								local Blacklisted = Blacklist[Instance]
+								-- 修改：只认 MeshId
+								if not ( Blacklisted and Blacklisted.MeshId == MeshId ) then
+									tableinsert(Aligns, {
+										Offset = Table.Offset,
+										Part0 = Parent,
+										Part1 = Instance
+									})
+									Blacklist[Instance] = { MeshId = MeshId }
+									return
+								end
+							end
+						end
+					end
+					local Accoutrement = FindFirstAncestorWhichIsA(Parent, "Accoutrement")
+					if Accoutrement and IsA(Accoutrement, "Accoutrement") then
+						local AccoutrementClone = Clone(Accoutrement)
+						local HandleClone = FindFirstChildOfClassAndName(AccoutrementClone, "BasePart", "Handle")
+						HandleClone.Transparency = OptionsRigTransparency
+						for Index, Descendant in next, GetDescendants(HandleClone) do
+							if IsA(Descendant, "JointInstance") then
+								Destroy(Descendant)
+							end
+						end
+						local AccessoryWeld = Instancenew("Weld")
+						AccessoryWeld.C0 = Descendant.CFrame
+						AccessoryWeld.C1 = Attachment.CFrame
+						AccessoryWeld.Name = "AccessoryWeld"
+						AccessoryWeld.Part0 = HandleClone
+						AccessoryWeld.Part1 = Attachment.Parent
+						AccessoryWeld.Parent = HandleClone
+						AccoutrementClone.Parent = Rig
+						tableinsert(Accessories, {
+							Handle = HandleClone,
+							MeshId = MeshId,
+							TextureId = TextureId
+						})
+						tableinsert(Aligns, {
+							Offset = CFrameidentity,
+							Part0 = Parent,
+							Part1 = HandleClone
+						})
 					end
 				end
 			end
@@ -628,7 +626,6 @@ do
 			tableclear(Aligns)
 			tableclear(Blacklist)
 			tableclear(Accessories)
-			-- 强制删除焊接，防止布娃娃系统搞乱
 			for i, v in next, GetChildren(Rig) do
 				if IsA(v, "Accoutrement") then
 					Destroy(v)
@@ -915,7 +912,7 @@ Empyrean = Start({
 		{ Name = "RigUpperRA", MeshId = "17605983196",  TextureId = "17606581728", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0), Rad(0), Rad(0)) },
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
-		-- 方块骨架（这里的 RigTorso 也改了，防止部分情况匹配失败）
+		-- 方块骨架
 		{ Name = "RigTorso", MeshId = "70523944235011",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
 		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
@@ -1004,7 +1001,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 	Class.Speed = 1
 	Class.KeepLast = 0
 	local Keyframes = KeyframeSequence:GetKeyframes()
-	table.sort(Keyframes, function(a, b) return a.Time < b.Time end) -- 感谢 10k_i，Roblox 默认不会排序。
+	table.sort(Keyframes, function(a, b) return a.Time < b.Time end)
 	Class.Length = Keyframes[#(Keyframes)].Time
 	local Yield = function(Seconds)
 		local Elapsed = 0
@@ -1013,7 +1010,7 @@ local LoadBoneAnimation = function(Rig: Model, KeyframeSequence: KeyframeSequenc
 			Elapsed += Services.RunService.Heartbeat:Wait()
 		until Elapsed >= Target
 	end
-	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then -- Moon Suite 修复
+	if Sequence:FindFirstChild("xSIXxNull", true) or Sequence:FindFirstChild("xSIXxCustomDir", true) or Sequence:FindFirstChild("xSIXxCustomStyle", true) then
 		local Children = Sequence:GetChildren()
 		for i = 1, #(Children) do
 			if Children[i]:FindFirstChild("Torso") then

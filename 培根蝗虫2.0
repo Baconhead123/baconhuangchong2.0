@@ -109,6 +109,24 @@ local script = Services.InsertService:LoadLocalAsset(getcustomasset(Directories.
 local Animations = script:WaitForChild("Animations")
 local Objects = script:WaitForChild("Objects")
 
+-- 动态替换模型内部的 RigTorso MeshId
+task.spawn(function()
+	local StarterCharacter = Objects:FindFirstChild("StarterCharacter")
+	if StarterCharacter then
+		local RigTorso = StarterCharacter:FindFirstChild("RigTorso", true)
+		if RigTorso then
+			if RigTorso:IsA("MeshPart") then
+				RigTorso.MeshId = "rbxassetid://70523944235011"
+			else
+				local SpecialMesh = RigTorso:FindFirstChildOfClass("SpecialMesh")
+				if SpecialMesh then
+					SpecialMesh.MeshId = "rbxassetid://70523944235011"
+				end
+			end
+		end
+	end
+end)
+
 -- 重新动画开始
 do
 	local Accessories = {}

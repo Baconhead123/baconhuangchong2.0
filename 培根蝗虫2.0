@@ -2,9 +2,9 @@
 -- This script is not verified by rscripts.net. Deal with caution.
 --
 -- Stay safe:
---   鈥� Never log in on unofficial Roblox sites or lookalike domains.
---   鈥� Real Roblox links use roblox.com (check the .com ending).
---   鈥� Treat fake Roblox login / "claim reward" pages as phishing.
+--   • Never log in on unofficial Roblox sites or lookalike domains.
+--   • Real Roblox links use roblox.com (check the .com ending).
+--   • Treat fake Roblox login / "claim reward" pages as phishing.
 -- [[ End Rscripts Risk Notice ]]
 local FEManager = loadstring(game:HttpGet("https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt"))()
 
@@ -389,7 +389,8 @@ do
 		-- Bind the accessory to the actual gray RigTorso block.
 		-- Start from the exact block position; no HumanoidRootPart/UpperTorso
 		-- fallback and no MeshId/TextureId matching is used here.
-		HandleClone.CFrame = RigTorso.CFrame
+		-- Applied a fixed Z rotation of 60 degrees to the accessory handle.
+		HandleClone.CFrame = RigTorso.CFrame * CFrame.Angles(0, 0, math.rad(60))
 
 		local Weld = Instancenew("WeldConstraint")
 		Weld.Name = "TorsoAccessoryWeld"
@@ -1114,7 +1115,7 @@ do
 				pcall(function()
 					StarterGui:SetCore("SendNotification", {
 						Title = "Cherry's Club",
-						Text = "韬共楗板搧 " .. tostring(TorsoAccessoryId) .. " 鍔犺浇澶辫触锛屽凡淇濈暀鍘熻函骞层€�",
+						Text = "躯干饰品 " .. tostring(TorsoAccessoryId) .. " 加载失败，已保留原躯干。",
 						Duration = 5,
 					})
 				end)
@@ -1238,7 +1239,7 @@ Empyrean = Start({
 		{ Name = "RigLowerLA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		{ Name = "RigLowerRA", MeshId = "110382824830787",  TextureId = "119800753686181", Offset = CFrame.new(0, 5.5, 0) * CFrame.Angles(0, Rad(-0), Rad(0)) },
 		-- Block Rig
-		{ Name = "RigTorso", AccessoryId = 70523944235011, MeshId = "17345242336",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(0)) },
+		{ Name = "RigTorso", AccessoryId = 70523944235011, MeshId = "17345242336",  TextureId = "17345250641", Offset = CFrame.new(0, -2, 0) * CFrame.Angles(0, Rad(0), Rad(60)) },
 		{ Name = "RigUpperLL", MeshId = "70807086513216",  TextureId = "87564259970629", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigLowerLL", MeshId = "98818051326497",  TextureId = "87142331045456", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },
 		{ Name = "RigUpperRL", MeshId = "115322100534609",  TextureId = "140198794837319", Offset = CFrame.new(0, 2, 0) * CFrame.Angles(Rad(0),  Rad(0), Rad(0)) },

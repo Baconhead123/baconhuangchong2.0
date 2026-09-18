@@ -299,39 +299,77 @@ do
 	end
 
 	-- Real torso accessory loader.
-	-- The catalog ID is loaded as an Accessory/Accoutrement and its Handle is
-	-- used as the actual RigTorso target. The original torso target parts are
-	-- removed so the loaded accessory is what the torso alignment points to.
+	-- Asset 70523944235011 is loaded by catalog ID only and is welded directly
+	-- to the original gray RigTorso block. The gray block remains at 0.75
+	-- transparency; the accessory itself remains visible.
 	local TorsoAccessoryId = 70523944235011
+	local TorsoRigTransparency = 0.75
 
 	local LoadTorsoAccessory = function(AssetId)
-		local Asset
-		local Loaded
-
-		Loaded, Asset = pcall(function()
+		local Loaded, Asset = pcall(function()
 			return Services.InsertService:LoadAsset(tonumber(AssetId))
 		end)
+
 		if not Loaded or not Asset then
 			Loaded, Asset = pcall(function()
 				local Objects = game:GetObjects("rbxassetid://" .. tostring(AssetId))
 				return Objects and Objects[1]
 			end)
 		end
-		if not Loaded or not Asset then return nil end
 
-		local Accessory = IsA(Asset, "Accoutrement") and Asset or FindFirstChildOfClass(Asset, "Accoutrement")
-		if not Accessory then
-			for _, Child in next, GetDescendants(Asset) do
-				if IsA(Child, "Accoutrement") then Accessory = Child break end
+		if not Loaded or not Asset then
+			return nil
+		end
+
+		local Accessory = nil
+		if IsA(Asset, "Accoutrement") then
+			Accessory = Asset
+		else
+			Accessory = FindFirstChildOfClass(Asset, "Accoutrement")
+			if not Accessory then
+				for _, Child in next, GetDescendants(Asset) do
+					if IsA(Child, "Accoutrement") then
+						Accessory = Child
+						break
+					end
+				end
 			end
 		end
-		if not Accessory then pcall(Destroy, Asset) return nil end
+
+		if not Accessory then
+			pcall(Destroy, Asset)
+			return nil
+		end
 
 		local Handle = FindFirstChildOfClassAndName(Accessory, "BasePart", "Handle")
-		if not Handle then pcall(Destroy, Asset) return nil end
+		if not Handle then
+			pcall(Destroy, Asset)
+			return nil
+		end
+
+		-- This is the original gray torso block. Do NOT replace or destroy it.
+		local RigTorso = FindFirstChildOfClassAndName(Rig, "BasePart", "RigTorso")
+		if not RigTorso then
+			pcall(Destroy, Asset)
+			return nil
+		end
+
+		-- Keep the gray RigTorso visible at the requested transparency.
+		RigTorso.Transparency = TorsoRigTransparency
+		RigTorso.CanCollide = false
+		RigTorso.CanTouch = false
+		RigTorso.CanQuery = false
+		RigTorso.Massless = true
+
+		-- Remove an older copy of this catalog accessory only.
+		for _, Child in next, GetDescendants(Rig) do
+			if Child.Name == "TorsoAccessory70523944235011" and Child ~= RigTorso then
+				pcall(Destroy, Child)
+			end
+		end
 
 		local HandleClone = Clone(Handle)
-		HandleClone.Name = "RigTorso"
+		HandleClone.Name = "TorsoAccessory70523944235011"
 		HandleClone.Anchored = false
 		HandleClone.CanCollide = false
 		HandleClone.CanTouch = false
@@ -339,35 +377,24 @@ do
 		HandleClone.Massless = true
 		HandleClone.Transparency = 0
 
-		-- Attach the catalog accessory directly to the rig torso. This path does
-		-- not inspect MeshId/TextureId; the catalog AssetId is the only selector.
-		local Target = FindFirstChildOfClassAndName(Rig, "BasePart", "Torso")
-		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "UpperTorso") end
-		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "HumanoidRootPart") end
-		if not Target then pcall(Destroy, Asset) pcall(Destroy, HandleClone) return nil end
-
-		local TargetAttachment
-		for _, A in next, GetDescendants(Target) do
-			if IsA(A, "Attachment") then
-				local Same = HandleClone:FindFirstChild(A.Name, true)
-				if Same and IsA(Same, "Attachment") then
-					TargetAttachment = A
-					break
-				end
+		-- Remove old joints so only our torso weld controls the accessory.
+		for _, Descendant in next, GetDescendants(HandleClone) do
+			if IsA(Descendant, "JointInstance") then
+				pcall(Destroy, Descendant)
 			end
 		end
 
 		HandleClone.Parent = Rig
-		if TargetAttachment then
-			local HandleAttachment = HandleClone:FindFirstChild(TargetAttachment.Name, true)
-			HandleClone.CFrame = TargetAttachment.WorldCFrame * HandleAttachment.CFrame:Inverse()
-		else
-			HandleClone.CFrame = Target.CFrame * CFrame.new(0, -2, 0)
-		end
+
+		-- Bind the accessory to the actual gray RigTorso block.
+		-- Start from the exact block position; no HumanoidRootPart/UpperTorso
+		-- fallback and no MeshId/TextureId matching is used here.
+		HandleClone.CFrame = RigTorso.CFrame
 
 		local Weld = Instancenew("WeldConstraint")
+		Weld.Name = "TorsoAccessoryWeld"
 		Weld.Part0 = HandleClone
-		Weld.Part1 = Target
+		Weld.Part1 = RigTorso
 		Weld.Parent = HandleClone
 
 		pcall(Destroy, Asset)

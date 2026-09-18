@@ -2,11 +2,11 @@
 -- This script is not verified by rscripts.net. Deal with caution.
 --
 -- Stay safe:
---   • Never log in on unofficial Roblox sites or lookalike domains.
---   • Real Roblox links use roblox.com (check the .com ending).
---   • Treat fake Roblox login / "claim reward" pages as phishing.
+--   鈥� Never log in on unofficial Roblox sites or lookalike domains.
+--   鈥� Real Roblox links use roblox.com (check the .com ending).
+--   鈥� Treat fake Roblox login / "claim reward" pages as phishing.
 -- [[ End Rscripts Risk Notice ]]
-local FEManager = loadstring(game:HttpGet("[https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt](https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt)"))()
+local FEManager = loadstring(game:HttpGet("https://gist.githubusercontent.com/MelonsStuff/a003ea305dd302eab1f8d372daed38b4/raw/9db59962b28555fd699a7c29891efb85d45677ab/gistfile1.txt"))()
 
 -- tables
 local ScriptOptions = {
@@ -92,13 +92,13 @@ task.spawn(function()
 		Text = "Files are currently downloading, you may need to run the script again after files download. (ignore this if you already have them)",
 		Duration = 5,
 	})
-	FEManager.DownloadFile(Directories.RBXMs, "Locust.rbxm", "[https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm](https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm)")
+	FEManager.DownloadFile(Directories.RBXMs, "Locust.rbxm", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/RBXMs/Locust.rbxm")
 	StarterGui:SetCore("SendNotification",{
 		Title = "Cherry's Club",
 		Text = "RBXMs Downloaded.",
 		Duration = 2,
 	})
-	FEManager.DownloadFile(Directories.Songs, "LocustTheme.mp3", "[https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3](https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3)")
+	FEManager.DownloadFile(Directories.Songs, "LocustTheme.mp3", "https://github.com/MelonsStuff/FEVerse/raw/refs/heads/main/Songs/LocustTheme.mp3")
  
 
 end)
@@ -298,6 +298,10 @@ do
 		end
 	end
 
+	-- Real torso accessory loader.
+	-- The catalog ID is loaded as an Accessory/Accoutrement and its Handle is
+	-- used as the actual RigTorso target. The original torso target parts are
+	-- removed so the loaded accessory is what the torso alignment points to.
 	local TorsoAccessoryId = 70523944235011
 
 	local LoadTorsoAccessory = function(AssetId)
@@ -327,13 +331,16 @@ do
 		if not Handle then pcall(Destroy, Asset) return nil end
 
 		local HandleClone = Clone(Handle)
-		HandleClone.Name = "RigTorsoAccessory"
+		HandleClone.Name = "RigTorso"
 		HandleClone.Anchored = false
 		HandleClone.CanCollide = false
 		HandleClone.CanTouch = false
 		HandleClone.CanQuery = false
 		HandleClone.Massless = true
+		HandleClone.Transparency = 0
 
+		-- Attach the catalog accessory directly to the rig torso. This path does
+		-- not inspect MeshId/TextureId; the catalog AssetId is the only selector.
 		local Target = FindFirstChildOfClassAndName(Rig, "BasePart", "Torso")
 		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "UpperTorso") end
 		if not Target then Target = FindFirstChildOfClassAndName(Rig, "BasePart", "HumanoidRootPart") end
@@ -1052,7 +1059,7 @@ do
 			OptionsHideCharacter = Options.HideCharacter
 			OptionsParentCharacter = Options.ParentCharacter
 			local OptionsRigSize = Options.RigSize
-			OptionsRigTransparency = Options.RigTransparency or 0
+			OptionsRigTransparency = Options.RigTransparency or 1
 			OptionsSetCameraSubject = Options.SetCameraSubject
 			OptionsSetCameraType = Options.SetCameraType
 			OptionsSetCharacter = Options.SetCharacter
@@ -1080,18 +1087,21 @@ do
 				pcall(function()
 					StarterGui:SetCore("SendNotification", {
 						Title = "Cherry's Club",
-						Text = "躯干饰品 " .. tostring(TorsoAccessoryId) .. " 加载失败，已保留原躯干。",
+						Text = "韬共楗板搧 " .. tostring(TorsoAccessoryId) .. " 鍔犺浇澶辫触锛屽凡淇濈暀鍘熻函骞层€�",
 						Duration = 5,
 					})
 				end)
 			end
 
-			-- 将 Rig 中的所有方块与零件透明度完全设为 0 (完全不透明)
 			for Index, Descendant in next, GetDescendants(Rig) do
 				if IsA(Descendant, "Attachment") then
 					Attachments[Descendant.Name] = Descendant
 				elseif IsA(Descendant, "BasePart") or IsA(Descendant, "Decal") then
-					Descendant.Transparency = 0
+					if Descendant.Name ~= "RigTorso" then
+						Descendant.Transparency = OptionsRigTransparency
+					else
+						Descendant.Transparency = 0
+					end
 				end
 			end
 
@@ -1228,7 +1238,7 @@ Empyrean = Start({
 	HideCharacter = Vector3.new(0, -30, 0),
 	ParentCharacter = true,
 	RigSize = 1,
-	RigTransparency = 0,
+	RigTransparency = 0.75,
 	R15 = false,
 	SetCameraSubject = true,
 	SetCameraType = true,
